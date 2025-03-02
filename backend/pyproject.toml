@@ -1,0 +1,27 @@
+[project]
+name = "portfolio-trajectory"
+version = "0.1.0"
+description = "Portfolio Trajectory is a FastAPI-powered application that runs Monte Carlo stock market simulations to provide a realistic range of outcomes for investing and retirement planning. It helps users model market volatility and assess potential future portfolio performance."
+authors = [
+    {name = "Your Name",email = "you@example.com"}
+]
+license = {text = "MIT License"}
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi (>=0.115.11,<0.116.0)",
+    "pydantic (>=2.10.6,<3.0.0)",
+    "numpy (>=2.2.3,<3.0.0)",
+    "pandas (>=2.2.3,<3.0.0)",
+    "yfinance (>=0.2.54,<0.3.0)",
+    "uvicorn (>=0.34.0,<0.35.0)"
+]
+packages = [{include = "portfolio_trajectory"}]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.5"
+
