@@ -21,7 +21,7 @@ class CashFlowInput(CamelModel):
     strategy: Strategy = Field()
     contribution: float | None = Field(None)
     withdrawal: float | None = Field(None)
-    months_to_retirement: int | None = Field(None, gt=-1)
+    months_to_retirement: int | None = Field(None, ge=0)
 
     @field_validator("strategy", mode="before")
     @classmethod
@@ -92,7 +92,7 @@ class ReturnModelInput(CamelModel):
     returns_source: ReturnsSource | str | None = Field(None)
     start_date: date | None = Field(None)
     end_date: date | None = Field(None)
-    block_size: int | None = Field(None, gt=0)
+    block_size: int | None = Field(None, ge=1)
     circular: bool | None = Field(None)
 
     @field_validator("model_type", "returns_source", mode="before")
@@ -161,6 +161,59 @@ class ReturnModelInput(CamelModel):
             )
 
         if self.start_date and self.end_date and self.start_date > self.end_date:
-            raise ValueError("'startDate' cannot be after 'endDate'.")
+            raise ValueError("'startDate' cannot be after 'endDate'")
 
+        return self
+
+
+MIN_STEPS = 12
+MAX_STEPS = 12 * 100
+MIN_PATHS = 100
+MAX_PATHS = 1000000
+
+
+class SimulationConfig(CamelModel):
+    """Top-level configuration for the simulation."""
+
+    num_steps: int = Field(ge=MIN_STEPS, le=MAX_STEPS)
+    num_paths: int = Field(ge=MIN_PATHS, le=MAX_PATHS)
+    initial_balances: float | list[float]
+    percentiles: list[int]
+    return_model: ReturnModelInput
+    cash_flow_strategy: CashFlowInput
+
+    @field_validator("initial_balances")
+    @classmethod
+    def validate_initial_balances(
+        cls, value: float | list[float]
+    ) -> float | list[float]:
+        """Ensure initialBalances are greater than or equal to 0."""
+        if isinstance(value, list):
+            if not all(v >= 0 for v in value):
+                raise ValueError(
+                    "all values in initialBalances must be greater than or equal to 0"
+                )
+        else:
+            if value < 0:
+                raise ValueError("initialBalances must be greater than or equal to 0")
+        return value
+
+    @field_validator("percentiles")
+    @classmethod
+    def validate_percentiles(cls, value: list[int]) -> list[int]:
+        """Ensure percentiles are between 0 and 100, unique, and sorted."""
+        if not all(0 < p < 100 for p in value):
+            raise ValueError("each percentile must be greater than 0 and less than 100")
+        if len(set(value)) != len(value):
+            raise ValueError("percentiles must be unique")
+        return sorted(value)
+
+    @model_validator(mode="after")
+    def validate_cross_fields(self):
+        """Ensure initialBalances list length equals numPaths if a list."""
+        if (
+            isinstance(self.initial_balances, list)
+            and len(self.initial_balances) != self.num_paths
+        ):
+            raise ValueError("initialBalances must have the same length as numPaths")
         return self

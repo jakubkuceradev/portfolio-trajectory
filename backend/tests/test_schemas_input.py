@@ -281,3 +281,135 @@ class TestReturnModelInput:
         }
         with pytest.raises(ValidationError, match=r"startDate"):
             ReturnModelInput(**data)
+
+
+# def valid_return_model_statistical(self):
+#     # For a non-parametric cls type, only returns_source is required.
+#     return ReturnModelInput(
+#         modelType="statistical",  # This will be normalized to ModelType.STATISTICAL
+#         returnsSource="global",  # Normalized to ReturnsSource.GLOBAL
+#     )
+
+
+# def valid_cash_flow_strategy():
+#     # Using the default "zero" strategy which requires no additional fields.
+#     return CashFlowInput(strategy="zero")
+
+
+# ---------------------------
+# Tests for SimulationConfig
+# ---------------------------
+
+
+# def test_valid_simulation_config_single_balance():
+#     """Valid configuration when initial_balances is a single positive float."""
+#     config_data = {
+#         "numSteps": 100,  # valid: between 11 and 2000
+#         "numPaths": 1000,  # valid: between 99 and 1,000,000
+#         "initialBalances": 1500.0,  # single positive float
+#         "percentiles": [1, 10, 25, 50, 75, 90, 99],
+#         "returnModel": valid_return_model_statistical(),
+#         "cashFlowStrategy": valid_cash_flow_strategy(),
+#     }
+#     config = SimulationConfig(**config_data)
+#     assert config.num_steps == 100
+#     assert config.num_paths == 1000
+#     assert config.initial_balances == 1500.0
+#     assert all(0 < p < 100 for p in config.percentiles)
+
+
+# def test_valid_simulation_config_list_balance():
+#     """Valid configuration when initial_balances is a list with length equal to num_paths."""
+#     num_paths = 10
+#     # Create a list of 10 positive balances.
+#     balances = [1000.0 + i * 10 for i in range(num_paths)]
+#     config_data = {
+#         "numSteps": 200,
+#         "numPaths": num_paths,
+#         "initialBalances": balances,
+#         "percentiles": [10, 20, 30, 40, 50],
+#         "returnModel": valid_return_model_statistical(),
+#         "cashFlowStrategy": valid_cash_flow_strategy(),
+#     }
+#     config = SimulationConfig(**config_data)
+#     assert isinstance(config.initial_balances, list)
+#     assert len(config.initial_balances) == num_paths
+
+
+# def test_invalid_initial_balances_list_length():
+#     """An error should be raised if initial_balances list length doesn't equal num_paths."""
+#     config_data = {
+#         "numSteps": 150,
+#         "numPaths": 5,  # expecting 5 balances
+#         "initialBalances": [1000.0, 1100.0, 1200.0],  # only 3 provided
+#         "percentiles": [5, 25, 50, 75, 95],
+#         "returnModel": valid_return_model_statistical(),
+#         "cashFlowStrategy": valid_cash_flow_strategy(),
+#     }
+#     with pytest.raises(
+#         ValidationError, match=r"initialBalances must have the same length as numPaths"
+#     ):
+#         SimulationConfig(**config_data)
+
+
+# def test_invalid_initial_balance_value():
+#     """An error should be raised if any balance in the list is non-positive."""
+#     num_paths = 3
+#     balances = [1000.0, -500.0, 1200.0]  # one balance is negative
+#     config_data = {
+#         "numSteps": 120,
+#         "numPaths": num_paths,
+#         "initialBalances": balances,
+#         "percentiles": [10, 50, 90],
+#         "returnModel": valid_return_model_statistical(),
+#         "cashFlowStrategy": valid_cash_flow_strategy(),
+#     }
+#     with pytest.raises(
+#         ValidationError, match=r"allInitialBalances must be greater than 0"
+#     ):
+#         SimulationConfig(**config_data)
+
+
+# def test_invalid_percentiles():
+#     """An error should be raised if any percentile is not between 0 and 100 (exclusive)."""
+#     config_data = {
+#         "numSteps": 130,
+#         "numPaths": 500,
+#         "initialBalances": 2000.0,
+#         "percentiles": [0, 50, 100],  # 0 and 100 are invalid
+#         "returnModel": valid_return_model_statistical(),
+#         "cashFlowStrategy": valid_cash_flow_strategy(),
+#     }
+#     with pytest.raises(
+#         ValidationError,
+#         match=r"eachPercentile must be greater than 0 and less than 100",
+#     ):
+#         SimulationConfig(**config_data)
+
+
+# def test_invalid_num_steps():
+#     """An error should be raised if num_steps is out of the allowed range."""
+#     config_data = {
+#         "numSteps": 10,  # too low; must be greater than 11
+#         "numPaths": 500,
+#         "initialBalances": 2000.0,
+#         "percentiles": [5, 50, 95],
+#         "returnModel": valid_return_model_statistical(),
+#         "cashFlowStrategy": valid_cash_flow_strategy(),
+#     }
+#     with pytest.raises(ValidationError, match=r"ensure this value is greater than 11"):
+#         SimulationConfig(**config_data)
+
+
+# def test_invalid_num_paths():
+#     """An error should be raised if num_paths is out of the allowed range."""
+#     config_data = {
+#         "numSteps": 100,
+#         "numPaths": 50,  # too low; must be greater than 99
+#         "initialBalances": 2000.0,
+#         "percentiles": [5, 50, 95],
+#         "returnModel": valid_return_model_statistical(),
+#         "cashFlowStrategy": valid_cash_flow_strategy(),
+#     }
+#     with pytest.raises(ValidationError, match=r"ensure this value is greater than 99"):
+#         SimulationConfig(**config_data)
