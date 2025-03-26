@@ -117,6 +117,7 @@ class Parameters(CamelModel):
 
     num_steps: int
     num_paths: int
+    initial_balances: list[float]
 
 
 class Metrics(CamelModel):

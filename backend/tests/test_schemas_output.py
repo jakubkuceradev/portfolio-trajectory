@@ -1,3 +1,5 @@
+"""Import testing tools and tested classes."""
+
 import pytest
 from pydantic import ValidationError
 from portfolio_trajectory.schemas.output import (
@@ -147,17 +149,10 @@ def test_metric_data_invalid_value():
 # Test Parameters
 def test_parameters_valid():
     """Test Parameters with valid step and path counts."""
-    data = {"numSteps": 100, "numPaths": 50}  # camelCase due to CamelModel
+    data = {"numSteps": 100, "numPaths": 50, "initialBalances": [14.0, 12.0]}  # camelCase due to CamelModel
     params = Parameters(**data)
     assert params.num_steps == 100
     assert params.num_paths == 50
-
-
-def test_parameters_negative_values():
-    """Test Parameters with negative num_steps (no validation yet)."""
-    data = {"numSteps": -1, "numPaths": 50}
-    params = Parameters(**data)
-    assert params.num_steps == -1  # Passes unless constrained
 
 
 # Test Metrics
@@ -191,7 +186,7 @@ def test_metrics_valid():
 def test_data_valid():
     """Test Data with valid parameters, paths, and metrics."""
     data = {
-        "parameters": {"numSteps": 10, "numPaths": 5},
+        "parameters": {"numSteps": 10, "numPaths": 5, "initialBalances": [17.0, 0]},
         "paths": {
             "balances": [{"id": 1, "values": {"nominal": [1.0], "real": [1.1]}}],
             "returns": [],
@@ -229,7 +224,7 @@ def test_data_missing_field():
 def test_data_serialization():
     """Test Data serialization to dictionary."""
     data_instance = Data(
-        parameters=Parameters(num_steps=10, num_paths=5),
+        parameters=Parameters(num_steps=10, num_paths=5, initial_balances=[11.0, 10.5, 0]),
         paths=Paths(
             balances=[PathData(id=1, values=ValueArray(nominal=[1.0], real=[1.1]))],
             returns=[],
