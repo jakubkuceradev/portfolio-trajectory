@@ -13,6 +13,8 @@
 - `npm run format` — Prettier write
 - `npm run format:check` — Prettier check
 - `npm run typecheck` — `react-router typegen && tsc`
+- `npm test` — Vitest (single run)
+- `npm run test:watch` — Vitest (watch mode)
 
 ## Workflow
 
