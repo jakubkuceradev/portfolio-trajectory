@@ -1,7 +1,10 @@
 export function meta() {
   return [
     { title: "Portfolio Trajectory" },
-    { name: "description", content: "Interactive lifecycle investing simulator" },
+    {
+      name: "description",
+      content: "Interactive lifecycle investing simulator",
+    },
   ];
 }
 

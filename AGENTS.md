@@ -8,9 +8,15 @@
 
 ## Commands
 
-No tooling configured yet. When adding:
-- Use Vite for React/TypeScript dev server
-- Place lint, typecheck, and test commands in package.json scripts
+- `npm run dev` — React Router dev server
+- `npm run lint` — ESLint
+- `npm run format` — Prettier write
+- `npm run format:check` — Prettier check
+- `npm run typecheck` — `react-router typegen && tsc`
+
+## Workflow
+
+- **Always lint before format before committing**: `npm run lint && npm run format`
 
 ## Architecture Notes
 
