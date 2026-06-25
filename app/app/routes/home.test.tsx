@@ -3,7 +3,7 @@ import Home from "./home";
 
 test("renders the heading", () => {
   render(<Home />);
-  expect(
-    screen.getByRole("heading", { level: 1 })
-  ).toHaveTextContent("Portfolio Trajectory");
+  expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+    "Portfolio Trajectory",
+  );
 });
